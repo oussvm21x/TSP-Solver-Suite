@@ -207,3 +207,25 @@ def prim(graphe_md) :
                 pi[t] = s 
                 F.inserer(t, cle[t])    
     return pi
+
+
+# --- 6. Convertir pi en GrapheTL
+def pi_vers_graphe_tl(pi) :
+    """
+    Convertit le tableau des prédécesseurs (pi) en un GrapheTL représentant l'arbre couvrant.
+
+    Args :
+        pi (list) : Le tableau des prédécesseurs
+
+    Returns :
+        GrapheTL : Le graphe représentant l'arbre couvrant
+    """
+    n = len(pi)
+    GTL = GrapheTL(n)
+
+    for v in range(n) :
+        u = pi[v]
+        if u != -1 :
+            GTL.ajouter_arc(u, v)
+    
+    return GTL
