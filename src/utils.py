@@ -1,5 +1,6 @@
 import random 
 import os 
+import sys 
 
 # --- Helper functions 
 
@@ -85,3 +86,79 @@ def calculer_longueur_cycle(cycle , graphe_md):
         longueur += D[u][v]
     
     return longueur
+
+
+# --- 4. DFS 
+# Augmentation de la limite de récursion pour les grands graphes
+sys.setrecursionlimit(200000)
+
+def dfs(GTL) : 
+    """
+    Algorithme de parcours en prodondeure (DFS) 
+    
+    Args : j
+        GTL(GrapheTL) : Le graphe à parcourir 
+
+    Returns :
+        tuple : (P , S, P_star , S_star , pi)
+        P : Ordre de decouverte (Numéro de visite)
+        S : Ordre de fin de visite
+        P_start : Liste des sommets dans l'ordre de découverte
+        S_star : Liste des sommets dans l'ordre de fin de visite
+        pi : Tableau des prédécesseurs
+
+    """
+    n = GTL.n 
+
+    # Initialisations
+    ip = 0  # Indice de prefixe
+    is_ = 0  # Indice de suffixe
+
+    couleure = [0] * n  # 0 : blanc , 1 : gris , 2 : noir
+
+    pi = [-1] * n 
+    P = [0] * n
+    S = [0] * n
+    P_star = [0] * n
+    S_star = [0] * n
+
+    BLANC , GRIS , NOIR = 0 , 1 , 2 
+
+    # --- Procédure récursive interne
+    # visiter en profondeur 
+    def visiter_en_profondeur(u) : 
+        nonlocal ip , is_
+
+        # Marquer le sommet comme visité (gris) 
+        couleure[u] = GRIS 
+
+        # Enregistrer le sommet dans l'ordre de découverte 
+        ip += 1 
+        P[u] = ip
+        P_star[ip - 1] = u
+
+        # On decouvre les voisins 
+        voisins = sorted(G.T[u])
+
+        # Boucle principale de la procedure 
+        for v in voisins : 
+            if couleure[v] == BLANC :
+                pi[v] = u 
+                visiter_en_profondeur(v) 
+        
+        # Exploration de u est terminer 
+        couleure[u] = NOIR 
+
+        # u est ajouté à l'ordre de fin de visite
+        is_ += 1
+        S[u] = is_
+        S_star[is_ - 1] = u
+
+    # --- Boucle principale de DFS
+    for u in range(n) :
+        if couleure[u] == BLANC :
+            visiter_en_profondeur(u)
+    return (P , S , P_star , S_star , pi)
+
+
+
