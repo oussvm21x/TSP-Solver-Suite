@@ -1,7 +1,9 @@
 import random 
 import os 
 import sys 
-
+from structures.tas import Tas 
+from structures.graphe_md import GrapheMD
+from structures.graphe_tl import GrapheTL 
 # --- Helper functions 
 
 # --- 1. Generer des points aleatoires 
@@ -162,3 +164,46 @@ def dfs(GTL) :
 
 
 
+# --- 5. Prim algorithme 
+def prim(graphe_md) : 
+    """
+    Implementation de l'algorithme de Prim pour construire un arbre couvrant de poids minimal (MST)
+    Version optimisée utilisant un tas binaire pour la sélection efficace des arêtes de poids minimal.
+
+    Args :
+        graphe_md (GrapheMD) : Le graphe des distances entre les points
+
+    Returns :
+        list : le tableau des prédécesseurs (pi) représentant le MST construit 
+    """
+    n = graphe_md.n 
+    D = graphe_md.D 
+
+    # Initialisations 
+    cle = [float('inf')] * n 
+    pi = [-1] * n 
+    visite = [False] * n 
+
+    # Initialiser le tas avec les clés 
+    F = Tas()
+    cle[0] = 0
+    F.inserer(0, cle[0])
+
+    while not F.est_vide() :
+        # Extraire le sommet u avec la clé minimale 
+        s = F.extraire_min()
+
+        if visite[s] :
+            continue
+        visite[s] = True
+
+
+        # Mettre à jour les clés des voisins de u 
+        for t in range(n) : 
+            if s == t :
+                continue
+            if not visite[t] and D[s][t] < cle[t] :
+                cle[t] = D[s][t]
+                pi[t] = s 
+                F.inserer(t, cle[t])    
+    return pi
