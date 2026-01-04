@@ -68,7 +68,7 @@ def main():
         print("1. Démonstration Visuelle (1 seul graphe)")
         print("2. Étude Statistique (100 essais - Demande Prof)")
         print("3. Étude de l'évolution en fonction de N")
-        print("3. Quitter")
+        print("4. Quitter")
         
         choix = input("Votre choix : ")
         
