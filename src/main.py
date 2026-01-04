@@ -1,77 +1,92 @@
-import time
+import os
+import sys
 from structures.graphe_md import GrapheMD
+import utils
+
+# Importation des modules d'affichage et de stats
+from plot import afficher_comparaison, afficher_graphe_complet
+
+from statistics import lancer_etude_statistique , etude_evolution_N
+
+# Importation des algorithmes
 from algos.algo_ppp import algo_ppp
 from algos.opt_ppp import opt_ppp
 from algos.opt_prim import opt_prim
-from algos.hds import hds
-from plot import afficher_comparaison , afficher_graphe_complet
-import utils
+from algos.hds import hds as algo_hds
 
-
-def main():
-    print("=== PROJET TSP : Comparaison et Visualisation ===")
+def mode_demo():
+    print("\n--- MODE DÉMONSTRATION (Visualisation) ---")
+    choix = input("1. Points aléatoires\n2. Fichier texte\nChoix : ")
     
-    # 1. Configuration
-    N = 10  # Nombre de villes
+    points = []
+    if choix == '2':
+        chemin = input("Chemin du fichier (ex: data/exemple.txt) : ")
+        if os.path.exists(chemin):
+            points = utils.lire_fichier_texte(chemin)
+        else:
+            print("Fichier introuvable. Génération aléatoire par défaut.")
+            points = utils.generer_points_aleatoires(10)
+    else:
+        try:
+            n_val = int(input("Nombre de villes (N) : ") or 10)
+        except: n_val = 10
+        points = utils.generer_points_aleatoires(n_val)
+
+    # Création du graphe
+    graphe = GrapheMD(len(points), points)
     
-    # Génération
-    print(f"Génération de {N} villes...")
-    points = utils.generer_points_aleatoires(N)
-    graphe = GrapheMD(N, points)
+    # Affichage du graphe complet si N est petit
+    if len(points) <= 10:
+        print("Affichage du graphe complet...")
+        afficher_graphe_complet(graphe)
 
-    print("Affichage du graphe complet...")
-    afficher_graphe_complet(graphe)
-
-    # Définition des algos (Nom, Fonction lambda)
-    # Note : Pour OptPPP, on doit d'abord calculer PPP
+    # Exécution des algos
+    resultats = []
     algos = [
-        ("PPP (Glouton)", lambda g: algo_ppp(g)),
-        ("OptPPP (2-Opt)", lambda g: opt_ppp(algo_ppp(g), g)),
-        ("OptPrim (MST)", lambda g: opt_prim(g)),
-        ("HDS (Exact)", lambda g: hds(g))
+        ("PPP", lambda g: algo_ppp(g)),
+        ("OptPPP", lambda g: opt_ppp(algo_ppp(g), g)),
+        ("OptPrim", lambda g: opt_prim(g)),
+        ("HDS", lambda g: algo_hds(g))
     ]
 
-    donnees_graphiques = [] # Pour stocker les résultats
-
-    print(f"\n{'-'*60}")
-    print(f"{'ALGORITHME':<20} | {'COÛT':<15} | {'TEMPS (ms)':<10}")
-    print(f"{'-'*60}")
-
-    meilleur_cout_global = float('inf')
-
-    # 2. Exécution des algos
-    for nom, fonction in algos:
-        start_time = time.time()
+    print("\nCalcul en cours...")
+    for nom, func in algos:
         try:
-            cycle = fonction(graphe)
-            end_time = time.time()
-            duree = (end_time - start_time) * 1000
-            
-            cout = utils.calculer_longueur_cycle(cycle, graphe)
-            
-            print(f"{nom:<20} | {cout:<15.4f} | {duree:<10.4f}")
-            
-            # On sauvegarde le résultat pour le plot
-            donnees_graphiques.append((nom, cycle, cout))
-            
-            if cout < meilleur_cout_global:
-                meilleur_cout_global = cout
-                
+            c = func(graphe)
+            l = utils.calculer_longueur_cycle(c, graphe)
+            resultats.append((nom, c, l))
+            print(f" -> {nom} terminé (Coût: {l:.4f})")
         except Exception as e:
-            print(f"{nom:<20} | ERREUR: {e}")
+            print(f"Erreur {nom}: {e}")
 
-    print(f"{'-'*60}")
-    
-    # 3. Résumé texte
-    print("\nRésumé des performances :")
-    for nom, cycle, cout in donnees_graphiques:
-        diff = ((cout - meilleur_cout_global) / meilleur_cout_global) * 100
-        etat = "OPTIMAL" if diff == 0 else f"+{diff:.2f}%"
-        print(f" -> {nom} : {etat}")
+    # Affichage final
+    afficher_comparaison(points, resultats)
 
-    # 4. Affichage Graphique
-    print("\nLancement de l'affichage graphique...")
-    afficher_comparaison(points, donnees_graphiques)
+def main():
+    while True:
+        print("\n=== PROJET TSP : MENU PRINCIPAL ===")
+        print("1. Démonstration Visuelle (1 seul graphe)")
+        print("2. Étude Statistique (100 essais - Demande Prof)")
+        print("3. Étude de l'évolution en fonction de N")
+        print("3. Quitter")
+        
+        choix = input("Votre choix : ")
+        
+        if choix == '1':
+            mode_demo()
+        elif choix == '2':
+            try:
+                N = int(input("Taille des graphes N (conseil: 10) : ") or 10)
+                lancer_etude_statistique(N=N, nb_essais=100)
+            except ValueError:
+                print("Valeur incorrecte.")
+        elif choix == '3':
+            # Lance la nouvelle fonction
+            etude_evolution_N()
+        elif choix == '4':
+            break
+        else:
+            print("Choix invalide.")
 
 if __name__ == "__main__":
     main()
