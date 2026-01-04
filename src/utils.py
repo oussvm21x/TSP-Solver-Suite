@@ -139,8 +139,8 @@ def dfs(GTL) :
         P[u] = ip
         P_star[ip - 1] = u
 
-        # On decouvre les voisins 
-        voisins = sorted(G.T[u])
+        # On decouvre les voisins (extraction du sommet v depuis le tuple (v, poids))
+        voisins = sorted([v for v, poids in GTL.T[u]])
 
         # Boucle principale de la procedure 
         for v in voisins : 
@@ -191,7 +191,7 @@ def prim(graphe_md) :
 
     while not F.est_vide() :
         # Extraire le sommet u avec la clé minimale 
-        s = F.extraire_min()
+        _ , s = F.extraire_min()
 
         if visite[s] :
             continue
@@ -226,6 +226,6 @@ def pi_vers_graphe_tl(pi) :
     for v in range(n) :
         u = pi[v]
         if u != -1 :
-            GTL.ajouter_arc(u, v)
+            GTL.ajouter_arc(u, v, 1)  # Poids par défaut de 1 pour le MST
     
     return GTL

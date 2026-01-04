@@ -22,7 +22,7 @@ class GrapheMD:
         self.n = n 
         self.points = points 
         self.D = np.zeros((n,n))
-        self._calculer_matrice_distances()
+        self._calculer_distance_euclidienne()
     
 
     def _calculer_distance_euclidienne(self):

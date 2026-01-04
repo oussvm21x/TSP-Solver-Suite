@@ -17,9 +17,10 @@ def opt_ppp(cycle_init, G):
         list: Une liste représentant le cycle hamiltonien optimisé
     """
     D = G.D 
-    n = len(cycle) 
+
     # Copie du cycle initial , pour ne pas le modifier directement
     cycle = cycle_init.copy()
+    n = len(cycle)
 
     amelioration = True
 
