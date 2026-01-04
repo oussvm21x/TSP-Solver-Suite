@@ -65,9 +65,10 @@ TSP-Solver-Suite/
 - Python 3.x
 - Matplotlib (pour les graphiques)
 - Numpy (pour les calculs matriciels)
+- PyQt5 (pour le GUI)
 
 ```bash
-pip install matplotlib numpy
+pip install matplotlib numpy PyQt5
 ```
 
 ### Lancer le projet

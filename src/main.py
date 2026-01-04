@@ -36,7 +36,7 @@ def mode_demo():
     graphe = GrapheMD(len(points), points)
     
     # Affichage du graphe complet si N est petit
-    if len(points) <= 10:
+    if len(points) <= 20:
         print("Affichage du graphe complet...")
         afficher_graphe_complet(graphe)
 
